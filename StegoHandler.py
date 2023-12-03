@@ -102,7 +102,7 @@ class ImageLSBSteganography:
         print(f"Secret message embedded in Image: MessageStegano_{timestamp}.png")
 
     # Function used to extract Secret Message within an image
-    def extractMessage(self, steganoImagePath):
+    def extractMessage(self, steganoImagePath, messageLabel):
         # Open the stego image
         stego_image = Image.open(steganoImagePath)
         stego_array = np.array(stego_image)
@@ -124,6 +124,7 @@ class ImageLSBSteganography:
         # Convert the binary secret message back to a string
         secretMessage = ''.join(chr(int(binary_secret_message[i:i+8], 2)) for i in range(0, len(binary_secret_message), 8))
         print(f"Hidden secret message was {secretMessage}")
+        messageLabel.set(secretMessage)
 
 
 if __name__ == "__main__":

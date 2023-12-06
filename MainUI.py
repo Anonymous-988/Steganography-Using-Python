@@ -4,6 +4,9 @@ from tkinter import font
 from EmbedMessageUI import EmbedMessageUI
 from ExtractMessageUI import ExtractMessageUI
 
+from EmbedImageUI import EmbedImageUI
+from ExtractImageUI import ExtractImageUI
+
 """
 MainApp class is used to initialize the root tkinter app.
 This is not meant to inherit by subclasses.
@@ -108,14 +111,45 @@ class MainApp:
     
     def initImageFrame(self, container):
         frame = tk.Frame(container, height=300, width=200, bd=2, relief=tk.SUNKEN)
-        label2 = tk.Label(frame, text="Image Embedding", font= font.Font(family="arial",size= 15))
-        label2.pack()
+        titleLable = tk.Label(frame, text="Image Embedding", font= font.Font(family="arial",size= 15, underline=True))
+        titleLable.pack(pady=20)
+
+        # TODO: Need to update proper description for the Image Frame
+        descriptionStr = """LGB Image Steganography is a technique that conceals 
+        data within the least significant bits (LSBs) of the red, green, and 
+        blue channels of an image. This method alters the LSBs of pixel values, 
+        allowing for hidden message to be embedded without significantly 
+        altering the image's visual appearance. It uses the RGB channels' least 
+        significant bits to store additional data, enabling covert communication 
+        or data hiding within image files. Use Below buttons to implement the same."""
+        despLabel = tk.Label(frame, text=descriptionStr, font= font.Font(family="arial",size= 8))
+        despLabel.pack(padx=(0, 20))
+
+        embedButton = tk.Button(frame, text= "Embed Image", font= font.Font(family="arial",size= 15), bg="blue", fg="white", command= lambda: self.callEmbedImageUI())
+        embedButton.pack(pady=20)
+
+        extractButton = tk.Button(frame, text= "Extract Image", font= font.Font(family="arial",size= 15), bg="red", fg="white", command= lambda: self.callExtractImageUI())
+        extractButton.pack(pady=(0,20))
+
         return frame
     
+    # TODO: Need to implement Valid Audio Frame Currently just a template
     def initAudioFrame(self, container):
         frame = tk.Frame(container, height=300, width=200, bd=2, relief=tk.SUNKEN)
-        label3 = tk.Label(frame, text="Audio Embedding", font= font.Font(family="arial",size= 15))
-        label3.pack()
+        titleLable = tk.Label(frame, text="Audio Embedding", font= font.Font(family="arial",size= 15, underline=True))
+        titleLable.pack(pady=20)
+
+        descriptionStr = """Still Under Development
+        Work in Progress !!!!"""
+        despLabel = tk.Label(frame, text=descriptionStr, font= font.Font(family="arial",size= 8))
+        despLabel.pack(padx=(0, 20))
+
+        embedButton = tk.Button(frame, text= "Embed Message", font= font.Font(family="arial",size= 15), bg="blue", fg="white", command= lambda: self.callEmbedImageUI())
+        embedButton.pack(pady=20)
+
+        extractButton = tk.Button(frame, text= "Extract Message", font= font.Font(family="arial",size= 15), bg="red", fg="white", command= lambda: self.callExtractImageUI())
+        extractButton.pack(pady=(0,20))
+
         return frame
 
 
@@ -132,3 +166,9 @@ class MainApp:
 
     def callExtractMessageUI(self):
         extractMessageApp = ExtractMessageUI(self.root)
+
+    def callEmbedImageUI(self):
+        embedImageApp = EmbedImageUI(self.root)
+
+    def callExtractImageUI(self):
+        extractImageApp = ExtractImageUI(self.root)

@@ -7,7 +7,7 @@ import datetime
 # Class used tp perform various image LSB Steganography
 class ImageLSBSteganography:
     # Function used to Embed Secret Image within an another image
-    def embedImage(self, coverImagePath, secretImagePath):
+    def embedImage(self, coverImagePath, secretImagePath, fileLabel):
         # Load the cover image
         cover_image = Image.open(coverImagePath)
         cover_array = np.array(cover_image)
@@ -29,13 +29,15 @@ class ImageLSBSteganography:
 
         # Convert the stego array to an image and save it
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-
+        filename = f"stego_image_{timestamp}.png"
+        filepath = f"./Output/{filename}"
         stego_image = Image.fromarray(stego_array)
-        stego_image.save(f'./Output/stego_image_{timestamp}.png')
-        print(f"Secret Image embedded within the Cover Image: stego_image_{timestamp}.png")
+        stego_image.save(filepath)
+        fileLabel.set(filepath)
+        print(f"Secret Image embedded within the Cover Image: {filename}")
 
     # Function used to extract Secret Image within an another image
-    def extractImage(self, steganoImagePath):
+    def extractImage(self, steganoImagePath, fileLabel):
         # Load the stego image
         stego_image = Image.open(steganoImagePath)
 
@@ -52,15 +54,17 @@ class ImageLSBSteganography:
                     # Extract the LSB by bitwise AND with 1
                     secret_bit = stego_array[i, j, channel] & 1
                     # Set the corresponding bit in the secret image
-                    secret_array[i, j, channel] = secret_bit * 155  # Multiply by 255 to convert 0/1 to 0/255
+                    secret_array[i, j, channel] = secret_bit * 155  # Multiply by 255 to convert 0/1 to 0/255. Used to adjust intensity
 
         # Convert the secret NumPy array back to an image
         secret_image = Image.fromarray(secret_array.astype(np.uint8))
 
         # Save the extracted secret image
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        secret_image.save(f'./Output/extracted_secret_image_{timestamp}.png')
-        print(f"Secret Image extracted from cover Image: extracted_secret_image_{timestamp}.png")
+        filename = f"extracted_secret_image_{timestamp}.png"
+        filepath = f"./Output/{filename}"
+        secret_image.save(filepath)
+        print(f"Secret Image extracted from cover Image: {filename}")
 
 
     # Function used to embed Secret Message within an image
@@ -125,6 +129,8 @@ class ImageLSBSteganography:
         secretMessage = ''.join(chr(int(binary_secret_message[i:i+8], 2)) for i in range(0, len(binary_secret_message), 8))
         print(f"Hidden secret message was {secretMessage}")
         messageLabel.set(secretMessage)
+
+## TODO: Implement a Audio Steganography Handler
 
 
 if __name__ == "__main__":

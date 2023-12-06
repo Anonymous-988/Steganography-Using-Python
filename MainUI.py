@@ -91,7 +91,7 @@ class MainApp:
         titleLable = tk.Label(frame, text="Message Embedding", font= font.Font(family="arial",size= 15, underline=True))
         titleLable.pack(pady=20)
 
-        descriptionStr = """LGB Image Steganography is a technique that conceals 
+        descriptionStr = """LSB Image Steganography is a technique that conceals 
         data within the least significant bits (LSBs) of the red, green, and 
         blue channels of an image. This method alters the LSBs of pixel values, 
         allowing for hidden message to be embedded without significantly 

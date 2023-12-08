@@ -3,9 +3,13 @@
 import numpy as np
 from PIL import Image
 import datetime
+import wave
 
 # Class used tp perform various image LSB Steganography
 class ImageLSBSteganography:
+    def __init__(self) -> None:
+        self.outputFilePath = "./Output/Image/"
+
     # Function used to Embed Secret Image within an another image
     def embedImage(self, coverImagePath, secretImagePath, fileLabel):
         # Load the cover image
@@ -25,12 +29,13 @@ class ImageLSBSteganography:
         for i in range(cover_array.shape[0]):
             for j in range(cover_array.shape[1]):
                 for channel in range(3):  # Iterate over RGB channels
-                    stego_array[i, j, channel] = (cover_array[i, j, channel] & 0xFE) | (secret_array[i, j, channel] >> 7)
+                    if cover_array[i, j, channel] != secret_array[i, j, channel]:
+                        stego_array[i, j, channel] = (cover_array[i, j, channel] & 0xFE) | (secret_array[i, j, channel] >> 7)
 
         # Convert the stego array to an image and save it
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"stego_image_{timestamp}.png"
-        filepath = f"./Output/{filename}"
+        filename = f"ImageStegano_{timestamp}.png"
+        filepath = f"{self.outputFilePath}{filename}"
         stego_image = Image.fromarray(stego_array)
         stego_image.save(filepath)
         fileLabel.set(filepath)
@@ -61,14 +66,15 @@ class ImageLSBSteganography:
 
         # Save the extracted secret image
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        filename = f"extracted_secret_image_{timestamp}.png"
-        filepath = f"./Output/{filename}"
+        filename = f"ExtractedImage_{timestamp}.png"
+        filepath = f"{self.outputFilePath}{filename}"
         secret_image.save(filepath)
-        print(f"Secret Image extracted from cover Image: {filename}")
+        fileLabel.set(filepath)
+        print(f"Secret Image extracted from Stegano Image: {filename}")
 
 
     # Function used to embed Secret Message within an image
-    def embedMessage(self, coverImagePath, secretMessage):
+    def embedMessage(self, coverImagePath, secretMessage, imageLabel):
         # Open the cover image
         cover_image = Image.open(coverImagePath)
         cover_array = np.array(cover_image)
@@ -102,8 +108,11 @@ class ImageLSBSteganography:
 
         # Save the stego image
         timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-        stego_image.save(f"./Output/MessageStegano_{timestamp}.png")
-        print(f"Secret message embedded in Image: MessageStegano_{timestamp}.png")
+        filename = f"MessageStegano_{timestamp}.png"
+        filepath = f"{self.outputFilePath}{filename}"
+        stego_image.save(f"{filepath}")
+        imageLabel.set(filepath)
+        print(f"Secret message embedded in Image: {filename}")
 
     # Function used to extract Secret Message within an image
     def extractMessage(self, steganoImagePath, messageLabel):
@@ -130,16 +139,68 @@ class ImageLSBSteganography:
         print(f"Hidden secret message was {secretMessage}")
         messageLabel.set(secretMessage)
 
-## TODO: Implement a Audio Steganography Handler
+
+class AudioLSBSteganography:
+    def __init__(self) -> None:
+        self.outputFilePath = "./Output/Audio/"
+
+    def embedMessage(self, coverAudioPath, secretMessage, fileLabel):
+        # Open the audio file
+        audio = wave.open(coverAudioPath, mode='rb')
+
+        # Read audio frames and convert the secret message to binary
+        frames = audio.readframes(audio.getnframes())
+        secretMessage = ''.join(format(ord(char), '08b') for char in secretMessage)
+        messageLength = len(secretMessage)
+        if messageLength > 255:
+            raise Exception("Message Length should not be greater 255")
+        # Embed secret message in the least significant bit of audio frames
+        frames_modified = bytearray(frames)
+
+        frames_modified[-1] = messageLength
+
+        for i in range(messageLength):
+            frames_modified[i] = (frames_modified[i] & 254) | int(secretMessage[i])
+
+        # Save the stego image
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        filename = f"AudioStegano_{timestamp}.wav"
+        filepath = f"{self.outputFilePath}{filename}"
+
+        # Create a new wave file to save the modified frames
+        audio_steg = wave.open(filepath, 'wb')
+        audio_steg.setparams(audio.getparams())
+        audio_steg.writeframes(frames_modified)
+
+        # Close the files
+        audio.close()
+        audio_steg.close()
+        resMessage = f"Secret message embedded in Audio: {filename}"
+        print(resMessage)
+        fileLabel.set(filepath)
+
+    
+    def extractMessage(self, stegoAudioPath, messageLabel):
+        audio = wave.open(stegoAudioPath, mode='rb')
+        frames = audio.readframes(audio.getnframes())
+
+        messageLength = frames[-1]
+
+        extracted_message = ""
+        for bit in frames[:messageLength]:
+            extracted_message += str(bit & 1)
+        
+        # Convert the binary message back to text
+        extracted_text = ''.join(chr(int(extracted_message[i:i+8], 2)) for i in range(0, len(extracted_message), 8))
+
+        audio.close()
+        resMessage = f"Extracted message from Audio: {extracted_text}"
+        print(resMessage)
+        messageLabel.set(extracted_text)
 
 
 if __name__ == "__main__":
     print("-- Testing Stegano Handler Moduler --")
-    # Tried Implementing Image2Image LSB Steganography
-    # ImageStegObj = ImageLSBSteganography()
-    # ImageStegObj.embedImage("./Input/input2.jpg", "./Input/input4.jpg")
-    # ImageStegObj.extractImage("./Output/stego_image_20231002215312.png")
 
     ImageStegObj = ImageLSBSteganography()
-    # ImageStegObj.embedMessage("./Input/input2.jpg", "Hasta La Vista, Baby!!")
     ImageStegObj.extractMessage("./Output/MessageStegano_20231002223200.png")

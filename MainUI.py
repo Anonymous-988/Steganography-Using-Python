@@ -7,6 +7,9 @@ from ExtractMessageUI import ExtractMessageUI
 from EmbedImageUI import EmbedImageUI
 from ExtractImageUI import ExtractImageUI
 
+from EmbedAudioUI import EmbedAudioUI
+from ExtractAudioUI import ExtractAudioUI
+
 """
 MainApp class is used to initialize the root tkinter app.
 This is not meant to inherit by subclasses.
@@ -18,7 +21,7 @@ class MainApp:
     def __init__(self) -> None:
         self.root = tk.Tk()
         self.root.title("Steganography Application")
-        self.root.geometry('400x500')
+        self.root.geometry('400x500+0+0')
 
         # Container for Title
         self.initTitleContainer()
@@ -91,7 +94,7 @@ class MainApp:
         titleLable = tk.Label(frame, text="Message Embedding", font= font.Font(family="arial",size= 15, underline=True))
         titleLable.pack(pady=20)
 
-        descriptionStr = """LGB Image Steganography is a technique that conceals 
+        descriptionStr = """LSB Image Steganography is a technique that conceals 
         data within the least significant bits (LSBs) of the red, green, and 
         blue channels of an image. This method alters the LSBs of pixel values, 
         allowing for hidden message to be embedded without significantly 
@@ -115,13 +118,13 @@ class MainApp:
         titleLable.pack(pady=20)
 
         # TODO: Need to update proper description for the Image Frame
-        descriptionStr = """LGB Image Steganography is a technique that conceals 
-        data within the least significant bits (LSBs) of the red, green, and 
-        blue channels of an image. This method alters the LSBs of pixel values, 
-        allowing for hidden message to be embedded without significantly 
-        altering the image's visual appearance. It uses the RGB channels' least 
-        significant bits to store additional data, enabling covert communication 
-        or data hiding within image files. Use Below buttons to implement the same."""
+        descriptionStr = """Image within Image Steganography is a covert 
+        communication technique that conceals an entire image (secret image)
+          within another image (cover image) of the same dimensions. By modifying
+        the pixel values of the cover image, the secret image is embedded 
+        without changing the overall appearance significantly. This method 
+        allows for the secure transmission of visual information by hiding one
+            image within another, making it imperceptible to the naked eye."""
         despLabel = tk.Label(frame, text=descriptionStr, font= font.Font(family="arial",size= 8))
         despLabel.pack(padx=(0, 20))
 
@@ -139,15 +142,21 @@ class MainApp:
         titleLable = tk.Label(frame, text="Audio Embedding", font= font.Font(family="arial",size= 15, underline=True))
         titleLable.pack(pady=20)
 
-        descriptionStr = """Still Under Development
-        Work in Progress !!!!"""
+        descriptionStr = """LSB Audio Steganography is a covert technique used to 
+        conceal data within the least significant bits (LSBs) of audio frames. 
+        This method involves modifying the LSBs of the audio frames without 
+        significantly affecting the audio quality. By substituting the LSBs with 
+        secret data, this technique embeds information within the audio file. LSB 
+        Audio Steganography ensures that the altered audio remains audibly 
+        indistinguishable from the original, allowing for covert communication or 
+        data hiding within audio files."""
         despLabel = tk.Label(frame, text=descriptionStr, font= font.Font(family="arial",size= 8))
         despLabel.pack(padx=(0, 20))
 
-        embedButton = tk.Button(frame, text= "Embed Message", font= font.Font(family="arial",size= 15), bg="blue", fg="white", command= lambda: self.callEmbedImageUI())
+        embedButton = tk.Button(frame, text= "Embed Message", font= font.Font(family="arial",size= 15), bg="blue", fg="white", command= lambda: self.callEmbedAudioUI())
         embedButton.pack(pady=20)
 
-        extractButton = tk.Button(frame, text= "Extract Message", font= font.Font(family="arial",size= 15), bg="red", fg="white", command= lambda: self.callExtractImageUI())
+        extractButton = tk.Button(frame, text= "Extract Message", font= font.Font(family="arial",size= 15), bg="red", fg="white", command= lambda: self.callExtractAudioUI())
         extractButton.pack(pady=(0,20))
 
         return frame
@@ -172,3 +181,9 @@ class MainApp:
 
     def callExtractImageUI(self):
         extractImageApp = ExtractImageUI(self.root)
+
+    def callEmbedAudioUI(self):
+        embedAudioApp = EmbedAudioUI(self.root)
+
+    def callExtractAudioUI(self):
+        extractAudioApp = ExtractAudioUI(self.root)

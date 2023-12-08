@@ -1,1 +1,3 @@
-pyscript
+PIL
+wave
+tkinter
